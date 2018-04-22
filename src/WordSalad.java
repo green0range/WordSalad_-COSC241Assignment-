@@ -108,9 +108,43 @@ public class WordSalad implements Iterable<String> {
         return hands;
         //I will start on this one ~ William
     }
-        
+    /**
+     * Distributes the words into k nearly even length blocks.
+     * @param k the number of blocks.
+     * @return cell is a WordSalad[] array of split words.
+     */
     public WordSalad[] chop(int k) {
-        return null;
+	int i = 0;
+	WordNode curr = first;
+	while(curr!=null){
+	    curr=curr.next;
+	    i++;
+	}
+
+	//how many words each WordSalad should have
+	int each = i/k;
+	//remainder of words after each WordSalad is of equal length
+	int remainder = i%k;
+	int a = 0;
+	int b = 1;
+	
+	WordSalad[] cell = new WordSalad[k];
+	for(int j = 0;j<k;j++){
+	    cell[j] = new WordSalad();
+	}
+
+        for(String s: this){
+	    if(s != null){
+		cell[a].addLast(s);
+	    }
+	    if(b<each+(a<remainder?1:0)){
+		b++;
+	    }else{
+		b = 1;
+		a++;
+	    }
+	}
+	return cell;
     }
         
     public WordSalad[] split(int k) {
@@ -120,9 +154,19 @@ public class WordSalad implements Iterable<String> {
     public static WordSalad merge(WordSalad[] blocks) {
         return null;
     }
-        
+    /**
+     * Rejoins a sequence of blocks one after the other.
+     * @param blocks the blocks of words that are to be rejoined.
+     * @return w the result of rejoining the blocks into one WordSalad.
+     */    
     public static WordSalad join(WordSalad[] blocks) {
-        return null;
+	WordSalad w = new WordSalad();
+	for(WordSalad block: blocks){
+	    for(String s: block){
+		w.addLast(s);
+	    }
+	}
+	return w;	
     }
 
     public static WordSalad recombine(WordSalad[] blocks, int k) {
