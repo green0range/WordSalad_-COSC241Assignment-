@@ -88,26 +88,44 @@ public class WordSalad implements Iterable<String> {
     // Method stubs to be completed for the assignment.
     // See the assignment description for specification of their behaviour.
 
+    
     /**
-     * Distributes the words into k blocks similar to card dealing.
+     * Distributes words into k blocks as if dealing cards.
      * @param k the number of blocks.
      * @return WordSalad[] array of split WordSalads.
      */
-    public WordSalad[] distribute(int k) {
+    public WordSalad[] distribute(int k){
+	// Uses distribute with a subset equal to the entire WordSalad.
+	return distribute(k, this.first, this.last);
+    }
+    
+    /**
+     * Distributes a subset of words into k blocks as if dealing cards.
+     * @param k the number of blocks.
+     * @param start the first in the subset.
+     * @param end the last in the subset.
+     * @return WordSalad[] array of split WordSalads.
+     */
+    private WordSalad[] distribute(int k, WordNode start, WordNode end) {
         int i = 0;
         WordSalad[] hands = new WordSalad[k];
         for (int j=0; j<k; j++){
             hands[j] = new WordSalad();
-        }
-        for (String s:this){
+	}
+	WordNode pointer = start;
+	String s;
+        while (pointer.next != null || pointer != end){
+	    s = pointer.word;
+	    pointer = pointer.next;
             if (s != null){
                 hands[i].addLast(s);
             }
             if(i>=(k-1)){i=0;}else{i++;} // iterate over k
         }
         return hands;
-        //I will start on this one ~ William
     }
+
+    
     /**
      * Distributes the words into k nearly even length blocks.
      * @param k the number of blocks.
