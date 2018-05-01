@@ -1,33 +1,27 @@
 /* File: WordSalad.java - April 2018 */
 package week09;
 
+import java.util.Arrays;
+import java.util.*;
+
 /**
- *  Implementation of the WordSalad class.
- *  
- *  Github repository: https://is.gd/MkkXL2
+ *  Skeleton implementation of the WordSalad class.
  *
- *  !! Comment the methods you have completed !!
- *  @author Michael Albert (Skeleton implementation)
- *  @author Jack Baucke
- *  @author Anaru Hudson (chop and join)
- *  @author William Satterthwaite (distribute and merge)
+ *  @author Michael Albert
  */
 public class WordSalad implements Iterable<String> {
 
     private WordNode first;
     private WordNode last;
-    private int size; // I have added a record of the size such that merge can use it.
      
     public WordSalad() {
         this.first = null;
         this.last = null;
-        size = 0;
     }
 
     public WordSalad(java.util.List<String> words) {
         for (String word : words) {
             addLast(word);
-            size++;
         }
     }
 
@@ -39,7 +33,6 @@ public class WordSalad implements Iterable<String> {
         }
         WordNode newFirst = new WordNode(word, this.first);
         this.first = newFirst;
-        size++;
     }
 
     public void addLast(String word) {
@@ -49,12 +42,7 @@ public class WordSalad implements Iterable<String> {
         }
         WordNode newLast = new WordNode(word, null);
         this.last.next = newLast;
-        this.last = newLast;
-        size++;
-    }
-
-    public int getSize(){
-        return size;
+        this.last = newLast; 
     }
   
     private class WordNode {
@@ -103,183 +91,132 @@ public class WordSalad implements Iterable<String> {
     // Method stubs to be completed for the assignment.
     // See the assignment description for specification of their behaviour.
 
-    
     /**
-     * Distributes words into k blocks as if dealing cards.
+     * Distributes the words into k blocks similar to card dealing.
      * @param k the number of blocks.
      * @return WordSalad[] array of split WordSalads.
      */
-    public WordSalad[] distribute(int k){
-	// Uses distribute with a subset equal to the entire WordSalad.
-	return distribute(k, this.first, this.last);
-    }
-    
-    /**
-     * Returns the size of the WordSalad.
-     * @return size
-     */
-    public int getSize(){
-        return size;
-    }
-    
-    /**
-     * Distributes words into k blocks as if dealing cards.
-     * @param k the number of blocks.
-     * @param start the first in the subset.
-     * @param end the last in the subset.
-     * @return WordSalad[] array of split WordSalads.
-     */
-    public WordSalad[] distribute(int k){
-        // Uses distribute with a subset equal to the entire WordSalad.
-        return distribute(k, this.first, this.last);
-    }
-    
-    /**
-     * Distributes a subset of words into k blocks as if dealing cards.
-     * @param k the number of blocks.
-     * @param start the first in the subset.
-     * @param end the last in the subset.
-     * @return WordSalad[] array of split WordSalads.
-     */
-    private WordSalad[] distribute(int k, WordNode start, WordNode end) {
+    public WordSalad[] distribute(int k) {
         int i = 0;
         WordSalad[] hands = new WordSalad[k];
         for (int j=0; j<k; j++){
             hands[j] = new WordSalad();
         }
-        WordNode pointer = start;
-        String s;
-        s = pointer.word;
-        if (s != null){
-            hands[i].addLast(s);
-        }
-        if(i>=(k-1)){i=0;}else{i++;}
-        while (pointer.next != null || pointer != end){
-            pointer = pointer.next;
-            s = pointer.word;
+        for (String s:this){
             if (s != null){
                 hands[i].addLast(s);
             }
             if(i>=(k-1)){i=0;}else{i++;} // iterate over k
         }
         return hands;
+        //I will start on this one ~ William
     }
-
-    
-    /**
-* Distributes the words into k nearly even length blocks.
-     * @param k the number of blocks.
-     * @return cell is a WordSalad[] array of split words.
-     */
-    public WordSalad[] chop(int k) {
-        int i = 0;
-        WordNode curr = first;
-        while(curr!=null){
-            curr=curr.next;
-            i++;
-        }
-
-        //how many words each WordSalad should have
-        int each = i/k;
-        //remainder of words after each WordSalad is of equal length
-        int remainder = i%k;
-        int a = 0;
-        int b = 1;
         
-        WordSalad[] cell = new WordSalad[k];
-        for(int j = 0;j<k;j++){
-            cell[j] = new WordSalad();
-        }
+    public WordSalad[] chop(int k) {
+
+	int i = 0;
+	WordNode curr = first;
+	while(curr!=null){
+	    curr=curr.next;
+	    i++;
+	}
+
+	int ea = i/k;
+	int rem = i%k;
+	int m = 0;
+	int z = 1;
+	
+	WordSalad[] cell = new WordSalad[k];
+	for(int j = 0;j<k;j++){
+	    cell[j] = new WordSalad();
+	}
 
         for(String s: this){
-            if(s != null){
-                cell[a].addLast(s);
-            }
-            if(b<each+(a<remainder?1:0)){
-                b++;
-            }else{
-                b = 1;
-                a++;
-            }
-        }
-        return cell;
+	    if(s != null){
+		cell[m].addLast(s);
+	    }
+	    if(z<ea+(m<rem?1:0)){
+		z++;
+	    }else{
+		z = 1;
+		m++;
+	    }
+	}
+	return cell;
     }
-    
+        
     public WordSalad[] split(int k) {
-        int numWords = 0;
-        for (String s : this) {
-            numWords++;
-        }
-        int numBlocks = 0;
-        while (numWords > 0) {
-            int division = (numWords / k);
-            if ((numWords % k) != 0) {
-                division++;
-            }
-            numWords -= division;
-            numBlocks++;
-        }
-        WordSalad[] blocks = new WordSalad[numBlocks];        
-        for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = new WordSalad();
-        }        
-        WordNode pointer = this.first;           
-        while (pointer.next != null) {            
-            for (int i = 0; i < k; i++) {
-                blocks[i].addLast(pointer.word);
-                if (pointer.next != null) {
-                    pointer = pointer.next;
-                } else {
-                    return blocks;
-                }
-            }
-            k++;            
-        }
-        return blocks;
-    }
+	//count the number of words given
+	int count = 0;
+	for(String s:this){
+	    count++;
+	}
+	
+	//Count how many WordSalads there will be
+	int saladCount = 0;
+	while(count>0){
+	    int checker = (int) Math.ceil((double)count/k);
+	    saladCount++;
+	    count-=checker;
+	}
 
-    /** 
-     * Reverses the distribute method.
-     * @param blocks Array of wordSalads to join.
-     * @return single joined WordSalad.
-     */
-    public static WordSalad merge(WordSalad[] blocks) {
-        WordSalad w = new WordSalad();
-        int k = blocks[0].getSize();
-        for (int j=0; j<=k; j++){
-            for (int i=0; i<blocks.length; i++){
-                // adds the j'th index to w
-                WordNode current = blocks[i].first;
-                // to deal with uneven distributes.
-                boolean skip = false;
-                for (int a=0; a<j; a++){
-                    if (current.next != null) current = current.next;
-                    else skip = true;
-                }
-                if (!skip) w.addLast(current.word);
-            }
-        }
-        return w;
+	WordSalad[] newCell = new WordSalad[saladCount];
+	for(int p = 0;p<saladCount;p++){
+	    newCell[p] = new WordSalad();
+	}
+
+	int q = 0;//which WordSalad block to add to
+
+	//add all of the words to an arraylist
+	List<String> wordz = new ArrayList<String>();
+	for(String s:this){
+	    wordz.add(s);
+	}
+
+	while(q<saladCount){
+	    List<String> finalArr = new ArrayList<String>();
+	    finalArr = addExtractor(wordz, k);
+	    for(String s:finalArr){
+		newCell[q].addLast(s);//add each word the the current WordSalad
+	       	wordz.remove(s);//remove used words from original ArrayList
+	  }
+	    q++;//move to the next WordSalad
+	}
+	return newCell;
     }
 
     /**
-     * Rejoins a sequence of blocks one after the other.
-     * @param blocks the blocks of words that are to be rejoined.
-     * @return w the result of rejoining the blocks into one WordSalad.
-     */    
+     * Takes an arraylist, creates a new ArrayList and stores in it the words required.
+     * @param arrList the ArrayList passed with the words required.
+     * @param jump an int by which to iterate over the passed ArrayList with.
+     * @return removed an ArrayList of the words extracted from the passed ArrayList.
+     */
+    public List<String> addExtractor(List<String> arrList, int jump){
+	List<String> extracted = new ArrayList<String>();
+	int arrSize = arrList.size();//size of passed arraylist
+	int sizeChecker = 0;
+	while(arrSize > sizeChecker){
+	    extracted.add(arrList.get(sizeChecker));//add required word
+	    sizeChecker += jump;//iterate by k
+	}
+	return extracted;//return arraylist of words
+    }
+        
+    public static WordSalad merge(WordSalad[] blocks) {
+	return null;
+    }
+        
     public static WordSalad join(WordSalad[] blocks) {
         WordSalad w = new WordSalad();
-        for(WordSalad block: blocks){
-            for(String s: block){
-                w.addLast(s);
-            }
-        }
-        return w;       
+	for(WordSalad block: blocks){
+	    for(String s:block){
+		w.addLast(s);
+	    }
+	}
+	return w;
     }
-
     public static WordSalad recombine(WordSalad[] blocks, int k) {
-        WordSalad w = new WordSalad();
-        return w;
+	return null;
     }
 
 }
