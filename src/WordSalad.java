@@ -123,9 +123,13 @@ public class WordSalad implements Iterable<String> {
         }
         return hands;
     }
-        
-    public WordSalad[] chop(int k) {
 
+    /**
+     * Chops this into an array of k instances of WordSalad objects.
+     * @param k an int of the number of WordSalad blocks.
+     * @return cell an array of WordSalad objects.
+     */
+    public WordSalad[] chop(int k) {
 	int i = 0;
 	WordNode curr = first;
 	while(curr!=null){
@@ -133,10 +137,10 @@ public class WordSalad implements Iterable<String> {
 	    i++;
 	}
 
-	int ea = i/k;
-	int rem = i%k;
-	int m = 0;
-	int z = 1;
+	int ea = i/k;//how many words each WordSalad should have
+	int rem = i%k;//remainder of words after each WordSalad is equal length
+	int a = 0; //which object to add words to 
+	int b = 1;
 	
 	WordSalad[] cell = new WordSalad[k];
 	for(int j = 0;j<k;j++){
@@ -145,26 +149,32 @@ public class WordSalad implements Iterable<String> {
 
         for(String s: this){
 	    if(s != null){
-		cell[m].addLast(s);
+		cell[a].addLast(s);
 	    }
-	    if(z<ea+(m<rem?1:0)){
-		z++;
+	    if(b<ea+(a<rem?1:0)){
+		b++;
 	    }else{
-		z = 1;
-		m++;
+		b = 1;
+		a++;
 	    }
 	}
 	return cell;
     }
-        
+
+    /**
+     * Splits this into an array of WordSalad objects.
+     * @param k an int used to iterate through the words in this and find
+     *        the number of WordSalad objects required.
+     * @return splitArray a WordSalad[] array of split words.
+     */
     public WordSalad[] split(int k) {
 	//count the number of words given
 	int count = 0;
 	for(String s:this){
 	    count++;
 	}
-	
-	//Count how many WordSalads there will be
+
+	//count the number of WordSalad objects required
 	int saladCount = 0;
 	while(count>0){
 	    int checker = (int) Math.ceil((double)count/k);
@@ -172,46 +182,45 @@ public class WordSalad implements Iterable<String> {
 	    count-=checker;
 	}
 
-	WordSalad[] newCell = new WordSalad[saladCount];
-	for(int p = 0;p<saladCount;p++){
-	    newCell[p] = new WordSalad();
+	WordSalad[] splitArray = new WordSalad[saladCount];
+	for(int j = 0;j<saladCount;j++){
+	    splitArray[j] = new WordSalad();
 	}
 
-	int q = 0;//which WordSalad block to add to
-
-	//add all of the words to an arraylist
-	List<String> wordz = new ArrayList<String>();
+	//adds all of the words in this into an ArrayList
+	List<String> allWords = new ArrayList<String>();
 	for(String s:this){
-	    wordz.add(s);
+	    allWords.add(s);
 	}
 
-	while(q<saladCount){
-	    List<String> finalArr = new ArrayList<String>();
-	    finalArr = addExtractor(wordz, k);
-	    for(String s:finalArr){
-		newCell[q].addLast(s);//add each word the the current WordSalad
-	       	wordz.remove(s);//remove used words from original ArrayList
+	int i = 0; //current WordSalad object to add words to
+	while(i<saladCount){
+	    List<String> tempArr = new ArrayList<String>();
+	    tempArr = addExtractor(allWords, k);
+	    for(String s:tempArr){
+		splitArray[i].addLast(s);//add each word to the current WordSalad
+	       	allWords.remove(s);//remove used words from original ArrayList
 	  }
-	    q++;//move to the next WordSalad
+	    i++;//move to the next WordSalad
 	}
-	return newCell;
+	return splitArray;
     }
 
     /**
-     * Takes an arraylist, creates a new ArrayList and stores in it the words required.
+     * Takes an ArrayList, creates a new ArrayList and stores in it the words required.
      * @param arrList the ArrayList passed with the words required.
      * @param jump an int by which to iterate over the passed ArrayList with.
-     * @return removed an ArrayList of the words extracted from the passed ArrayList.
+     * @return extracted an ArrayList of the words extracted from the passed ArrayList.
      */
     public List<String> addExtractor(List<String> arrList, int jump){
 	List<String> extracted = new ArrayList<String>();
-	int arrSize = arrList.size();//size of passed arraylist
+	int arrSize = arrList.size();//size of passed ArrayList
 	int sizeChecker = 0;
 	while(arrSize > sizeChecker){
 	    extracted.add(arrList.get(sizeChecker));//add required word
 	    sizeChecker += jump;//iterate by k
 	}
-	return extracted;//return arraylist of words
+	return extracted;//return ArrayList of words
     }
         
     /** 
