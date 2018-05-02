@@ -13,15 +13,18 @@ public class WordSalad implements Iterable<String> {
 
     private WordNode first;
     private WordNode last;
+    private int size;
      
     public WordSalad() {
         this.first = null;
         this.last = null;
+	this.size = 0;
     }
 
     public WordSalad(java.util.List<String> words) {
         for (String word : words) {
             addLast(word);
+	    size++;
         }
     }
 
@@ -33,6 +36,7 @@ public class WordSalad implements Iterable<String> {
         }
         WordNode newFirst = new WordNode(word, this.first);
         this.first = newFirst;
+	size++;
     }
 
     public void addLast(String word) {
@@ -42,7 +46,8 @@ public class WordSalad implements Iterable<String> {
         }
         WordNode newLast = new WordNode(word, null);
         this.last.next = newLast;
-        this.last = newLast; 
+        this.last = newLast;
+	size++;
     }
   
     private class WordNode {
@@ -87,6 +92,14 @@ public class WordSalad implements Iterable<String> {
         return result.toString() + "]";
     }
 
+    /**
+     * Returns the size of the wordSalad.
+     * @return size int of size.
+     */
+    public int getSize(){
+	return size;
+    }
+
 
     // Method stubs to be completed for the assignment.
     // See the assignment description for specification of their behaviour.
@@ -109,7 +122,6 @@ public class WordSalad implements Iterable<String> {
             if(i>=(k-1)){i=0;}else{i++;} // iterate over k
         }
         return hands;
-        //I will start on this one ~ William
     }
         
     public WordSalad[] chop(int k) {
@@ -202,10 +214,35 @@ public class WordSalad implements Iterable<String> {
 	return extracted;//return arraylist of words
     }
         
+    /** 
+     * Reverses the distribute method.
+     * @param blocks Array of wordSalads to join.
+     * @return single joined WordSalad.
+     */
     public static WordSalad merge(WordSalad[] blocks) {
-	return null;
+        WordSalad w = new WordSalad();
+        int k = blocks[0].getSize();
+        for (int j=0; j<=k; j++){
+            for (int i=0; i<blocks.length; i++){
+                // adds the j'th index to w
+                WordNode current = blocks[i].first;
+                // to deal with uneven distributes.
+                boolean skip = false;
+                for (int a=0; a<j; a++){
+                    if (current.next != null) current = current.next;
+                    else skip = true;
+                }
+                if (!skip) w.addLast(current.word);
+            }
+        }
+        return w;
     }
-        
+
+    /**
+     * Rejoins a sequence of blocks one after the other.
+     * @param blocks the blocks of words that are to be rejoined.
+     * @return w the result of rejoining the blocks into one WordSalad.
+     */ 
     public static WordSalad join(WordSalad[] blocks) {
         WordSalad w = new WordSalad();
 	for(WordSalad block: blocks){
@@ -215,8 +252,35 @@ public class WordSalad implements Iterable<String> {
 	}
 	return w;
     }
-    public static WordSalad recombine(WordSalad[] blocks, int k) {
-	return null;
-    }
 
+
+    /** Recombines blocks that have been split.
+     * @param blocks the blocks of words to recombined.
+     * @param k the parameter used in there split.
+     * @return the recombined wordSalad.
+     */
+    public static WordSalad recombine(WordSalad[] blocks, int k) {
+	/* It expects the last two blocks to have one item each,
+	 * the only time this does not happen is split 1 */
+	if (blocks.length == 1){
+	    return blocks[0];
+	}
+	ArrayList<String> words = new ArrayList<>();
+	for (int i=blocks.length-2; i>-1; i--){
+	    /* Gives the intial starting point to add words around. */
+	    if (i == blocks.length-2){
+		words.add(blocks[i].first.word);
+		words.add(blocks[i+1].first.word);
+	    }else{
+		/* Adds blocks around the start according to k */
+		int index = 0;
+		for (String s:blocks[i]){
+		    words.add(index, s);
+		    index += k;
+		}
+	    }
+	}
+	WordSalad ws = new WordSalad(words);
+	return ws;
+    }
 }
